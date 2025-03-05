@@ -15,6 +15,7 @@ import 'package:untitled5/categoties/makeup/Rarbaeuty.dart'; // Import the Produ
 import 'package:provider/provider.dart';
 import 'models/CartModel.dart';
 import 'page/CartPage.dart';
+import 'page/Register.dart';
 
 void main() {
   runApp(
@@ -34,9 +35,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.pink,
       ),
-      home: LoginPage(),
       home: SplashScreen(),
-
       routes: {
         '/login': (context) => LoginPage(),
         '/status': (context) => StatusPage(),

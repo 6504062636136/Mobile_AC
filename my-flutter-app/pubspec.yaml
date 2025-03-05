@@ -1,0 +1,24 @@
+name: my_flutter_app
+description: A Flutter project to connect with MySQL database using XAMPP.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+    http: ^0.13.4
+    cupertino_icons: ^1.0.8
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo2.png # Ensure to include any assets you are using in your project

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -6,6 +7,26 @@ class RegisterPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  Future<void> _register() async {
+    final url = Uri.parse('http://localhost/register.php');
+    final response = await http.post(url, body: {
+      'username': _nameController.text,
+      'password': _passwordController.text,
+      'name': _nameController.text,
+      'email': _emailController.text,
+      'phone': _phoneController.text,
+    });
+
+    if (response.statusCode == 200) {
+      // Handle successful registration
+      print('Registration successful');
+    } else {
+      // Handle registration error
+      print('Registration failed');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +213,31 @@ class RegisterPage extends StatelessWidget {
                             ),
                             SizedBox(height: 15),
 
+                            Text(
+                              'Phone',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 5),
+                            TextFormField(
+                              controller: _phoneController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter your phone number',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your phone number';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 15),
+
                             Row(
                               children: <Widget>[
                                 Checkbox(
@@ -219,8 +265,7 @@ class RegisterPage extends StatelessWidget {
                                 ),
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    Navigator.pushNamed(context,
-                                        '/HomePage'); // ไปหน้า HomePage
+                                    _register();
                                   }
                                 },
                                 child: Text('Register',

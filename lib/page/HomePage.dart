@@ -222,54 +222,52 @@ class _HomePage1State extends State<HomePage1> {
               return Container(
                 margin: EdgeInsets.only(right: 10),
                 child: GestureDetector(
-
                   onTap: () => _onProductTap(_allItems[index]),
-                  child: Bestseller(
-                    name: _allItems[index]["name"]!,
-                    image: _allItems[index]["image"]!,
-                  onTap: () {
-                    // Navigate to the product detail page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          // Determine which detail page to show based on the index
-                          switch (index) {
-                            case 0:
-                              return GorginaLipstickDetailPage(
-                                productName: _allItems[index]["name"]!,
-                                productImage: _allItems[index]["image"]!,
-                              );
-                            case 1:
-                              return ShiseidoLipstickDetailPage(
-                                productName: _allItems[index]["name"]!,
-                                productImage: _allItems[index]["image"]!,
-                              );
-                            case 2:
-                              return RareBeautyDetailPage(
-                                productName: _allItems[index]["name"]!,
-                                productImage: _allItems[index]["image"]!,
-                              );
-                            default:
-                              return Container(); // Or an error page
-                          }
-                        },
-                      ),
-                    );
-                  },
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        _allItems[index]["image"]!,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
-                      SizedBox(height: 5),
-                      Text(_allItems[index]["name"]!),
-                    ],
+                  child: BestSellersPage(
 
-                  ),
+                      // onTap: () {
+                      //   // Navigate to the product detail page
+                      //   Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) {
+                      //         // Determine which detail page to show based on the index
+                      //         switch (index) {
+                      //           case 0:
+                      //             return GorginaLipstickDetailPage(
+                      //               productName: _allItems[index]["name"]!,
+                      //               productImage: _allItems[index]["image"]!,
+                      //             );
+                      //           case 1:
+                      //             return ShiseidoLipstickDetailPage(
+                      //               productName: _allItems[index]["name"]!,
+                      //               productImage: _allItems[index]["image"]!,
+                      //             );
+                      //           case 2:
+                      //             return RareBeautyDetailPage(
+                      //               productName: _allItems[index]["name"]!,
+                      //               productImage: _allItems[index]["image"]!,
+                      //             );
+                      //           default:
+                      //             return Container(); // Or an error page
+                      //         }
+                      //       },
+                      //     ),
+                      //   );
+                      // },
+                      //child: Column(
+                      /* children: [
+                        Image.asset(
+                          _allItems[index]["image"]!,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                        SizedBox(height: 5),
+                        Text(_allItems[index]["name"]!),
+                      ],
+                    ),*/
+                      ),
                 ),
               );
             },
