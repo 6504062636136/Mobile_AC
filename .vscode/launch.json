@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Project_GlamoraApp",
+            "cwd": "Users\\Neo\\Project_GlamoraApp",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Project_GlamoraApp (profile mode)",
+            "cwd": "Users\\Neo\\Project_GlamoraApp",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Project_GlamoraApp (release mode)",
+            "cwd": "Users\\Neo\\Project_GlamoraApp",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Begin_Flutter_app",
+            "cwd": "Users\\Neo\\StudioProjects\\Begin_Flutter_app",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "Begin_Flutter_app (profile mode)",
+            "cwd": "Users\\Neo\\StudioProjects\\Begin_Flutter_app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Begin_Flutter_app (release mode)",
+            "cwd": "Users\\Neo\\StudioProjects\\Begin_Flutter_app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

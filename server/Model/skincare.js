@@ -13,7 +13,15 @@ const skincareSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-    }
+    },
+    rating: {
+        type: Number,
+    },
+    reviews: {
+        type: Number,
+    },
+
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Skincare', skincareSchema);

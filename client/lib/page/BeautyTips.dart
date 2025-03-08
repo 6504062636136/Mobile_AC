@@ -1,271 +1,175 @@
-// import 'package:flutter/material.dart';
-// import 'package:url_launcher/url_launcher.dart'; // สำหรับเปิดลิงก์
-//
-
-// class BeautyTipsPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Color(0xFF795548), // สีพื้นหลังม่วง
-//       body: SafeArea(
-//         child: Column(
-//           children: [
-//             // ส่วน AppBar ที่กำหนดเอง
-//             Container(
-//               margin: EdgeInsets.fromLTRB(20, 20, 20, 20), // ระยะห่างจากขอบหน้าจอ
-//               decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(30),
-//                 color: Color(0xFFE0F7FA), // สีชมพูอ่อน (พื้นหลัง AppBar)
-//               ),
-//               child: Padding(
-//                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: <Widget>[
-//                     IconButton(
-//                       icon: Icon(Icons.menu, color: Colors.black),
-//                       onPressed: () {
-//                         // TODO: Implement Menu Functionality
-//                       },
-//                     ),
-//                     Text(
-//                       'GLAMORA',
-//                       style: TextStyle(
-//                         fontSize: 20,
-//                         fontWeight: FontWeight.bold,
-//                         color: Colors.black,
-//                       ),
-//                     ),
-//                     IconButton(
-//                       icon: Icon(Icons.person_outline, color: Colors.black),
-//                       onPressed: () {
-//                         // TODO: Implement Profile Functionality
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//             Expanded(
-//               child: SingleChildScrollView(
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(20.0),
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: <Widget>[
-//                       // หัวข้อ "Beauty Tips"
-//                       Row(
-//                         children: <Widget>[
-//                           Icon(Icons.content_cut, color: Colors.white),
-//                           SizedBox(width: 10),
-//                           Text(
-//                             'Beauty Tips',
-//                             style: TextStyle(
-//                               fontSize: 24,
-//                               fontWeight: FontWeight.bold,
-//                               color: Colors.white,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                       SizedBox(height: 20),
-//
-//                       // รายการ Beauty Tips
-//                       BeautyTipItem(
-//                         title: 'มัดรวม 6 กันแดด ใช้แล้วชอบ งานผิวสวย จึ้ง!',
-//                         imageUrl: 'assets/images/sunscreen.jpg', // แทนที่ด้วย path ที่ถูกต้อง
-//                         articleUrl: 'https://www.wongnai.com/beauty-tips/top-sunscreen', // แทนที่ด้วย URL บทความ
-//                       ),
-//                       SizedBox(height: 20),
-//
-//                       BeautyTipItem(
-//                         title: 'แชร์ 6 สกินแคร์ กู้หน้าสิว คืนหน้าใส!',
-//                         imageUrl: 'assets/images/skincare.jpg', // แทนที่ด้วย path ที่ถูกต้อง
-//                         articleUrl: 'https://www.jeban.com/topic/317250', // แทนที่ด้วย URL บทความ
-//                       ),
-//                       SizedBox(height: 20),
-//
-//                       BeautyTipItem(
-//                         title: 'Spring Tone Makeup',
-//                         imageUrl: 'assets/images/makeup.jpg', // แทนที่ด้วย path ที่ถูกต้อง
-//                         articleUrl: 'https://sistacafe.com/summaries/97847', // แทนที่ด้วย URL บทความ
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// // Widget สำหรับแต่ละรายการ Beauty Tip
-// class BeautyTipItem extends StatelessWidget {
-//   final String title;
-//   final String imageUrl;
-//   final String articleUrl;
-//
-//   const BeautyTipItem({
-//     Key? key,
-//     required this.title,
-//     required this.imageUrl,
-//     required this.articleUrl,
-//   }) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () async {
-//         // เปิด URL บทความเมื่อกด
-//         if (await canLaunchUrl(Uri.parse(articleUrl))) {
-//           await launchUrl(Uri.parse(articleUrl));
-//         } else {
-//           throw 'Could not launch $articleUrl';
-//         }
-//       },
-//       child: Container(
-//         decoration: BoxDecoration(
-//           color: Colors.white.withOpacity(0.8),
-//           borderRadius: BorderRadius.circular(20),
-//         ),
-//         padding: EdgeInsets.all(15),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: <Widget>[
-//             ClipRRect(
-//               borderRadius: BorderRadius.circular(10),
-//               child: Image.asset(
-//                 imageUrl,
-//                 width: double.infinity,
-//                 height: 150,
-//                 fit: BoxFit.cover,
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             Text(
-//               title,
-//               style: TextStyle(
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               children: <Widget>[
-//                 IconButton(
-//                   icon: Icon(Icons.favorite_border, color: Colors.red),
-//                   onPressed: () {
-//                     // TODO: Implement Add to Favorite Functionality
-//                   },
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:untitled5/page/HomePage.dart'; // Import HomePage
+
+class GlamoraApp extends StatelessWidget {
+  const GlamoraApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: const Color(0xFF7D4177),
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: const Color(0xFF7D4177),
+        ),
+      ),
+      home: const BeautyTipsPage(),
+    );
+  }
+}
 
 class BeautyTipsPage extends StatelessWidget {
-  final List<Map<String, String>> tips = [
-    {
-      "title": "มัดรวม 6 กันแดด ใช้แล้วชอบ งานผิวสวย",
-      "description": "สวัสดีทุกคนนน วันนี้จะมาเปิดกรุ 6 กันแดดที่ใช้แล้วชอบ...",
-      "image": "assets/images/sunscreen_tips.jpg",
-    },
-    {
-      "title": "แชร์ 6 สกินแคร์ กู้หน้าสิว คืนหน้าใส",
-      "description": "แชร์ 6 สกินแคร์ กู้หน้าสิว คืนหน้าใส ด้วยตัวเอง...",
-      "image": "assets/images/skincare_tips.jpg",
-    },
-    {
-      "title": "⭐ Spring Tone Makeup",
-      "description": "แต่งหน้าปังเป็นธรรมชาติแบบสาวตะวันตก...",
-      "image": "assets/images/spring_makeup.jpg",
-    },
-  ];
+  const BeautyTipsPage({Key? key}) : super(key: key);
+
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF77407F), // พื้นหลังม่วง
-      appBar: AppBar(
-        backgroundColor: Color(0xFF77407F),
-        elevation: 0,
-        title: Row(
-          children: [
-            Icon(Icons.content_cut, size: 28, color: Colors.white),
-            SizedBox(width: 10),
-            Text(
-              "Beauty Tips",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      backgroundColor: const Color.fromARGB(255, 248, 216, 233),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage1()),
+                    );
+                  },
+                ),
+                const Text(
+                  'Beauty Tips',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 48), // Placeholder to balance the row
+              ],
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(10),
+              children: [
+                BeautyTipCard(
+                  title: 'มัดรวม 6 คันแดด ใช้แล้วชอบงานผิวสวย ฉบับคนขี้เกียจแต่งหน้า! ✨',
+                  imageUrl: 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/og6IINQ2Ae0tvBBlBAgihJITEfuVzGiClAx1NE~tplv-tej9nj120t-origin.webp',
+                  onTap: () => _launchUrl('https://www.lemon8-app.com/minniebell/7371750565694423569?region=th'),
+                ),
+                const SizedBox(height: 10),
+                BeautyTipCard(
+                  title: 'เซรั่ม 6 สกินแคร์ กู้หน้าสิว คืนผิวใส ด้วยตัวเอง!',
+                  imageUrl: 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/oQIfiAb7QDJeEgF2AMAAsU3EgELgksuG1JenJs~tplv-tej9nj120t-origin.webp',
+                  description: 'รวม 30+ นวัตกรรมรีวิวแน่นมาก หอบมาจากคนที่ใช้เคยแล้วแถมทั้ง วัน 4 เดือนแล้ว...',
+                  onTap: () => _launchUrl('https://www.lemon8-app.com/@dahrawadee/7376241086932566529?region=th'),
+                ),
+                const SizedBox(height: 10),
+                BeautyTipCard(
+                  title: '⭐ Spring Tone Makeup',
+                  imageUrl: 'https://p16-va.lemon8cdn.com/tos-alisg-v-a3e477-sg/0a7f1a2048a6456e915d03168c7831a4~tplv-tej9nj120t-origin.webp',
+                  description: 'Blue Makeup เมคอัพโทนฟ้า💙🦋',
+                  onTap: () => _launchUrl('https://www.lemon8-app.com/mudmeemakeup/7244373015025205761?region=th'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: tips.length,
-          itemBuilder: (context, index) {
-            return _buildBeautyTipCard(tips[index]);
-          },
-        ),
+      bottomNavigationBar: Container(
+        height: 5,
+        color: Colors.white,
+        margin: const EdgeInsets.only(bottom: 20),
+        width: 100,
       ),
     );
   }
+}
 
-  Widget _buildBeautyTipCard(Map<String, String> tip) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                tip["image"]!,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
+class BeautyTipCard extends StatelessWidget {
+  final String title;
+  final String imageUrl;
+  final String? description;
+  final VoidCallback onTap;
+
+  const BeautyTipCard({
+    Key? key,
+    required this.title,
+    required this.imageUrl,
+    this.description,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    tip["title"]!,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    tip["description"]!,
-                    style: TextStyle(color: Colors.black54),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    if (description != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          description!,
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.favorite_border),
-              onPressed: () {
-                // ฟังก์ชันกดปุ่มหัวใจ
-              },
-            ),
-          ],
+              const Icon(
+                Icons.favorite_border,
+                color: Colors.black,
+              ),
+            ],
+          ),
         ),
       ),
     );

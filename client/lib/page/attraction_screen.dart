@@ -1,243 +1,193 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'attractions_detail_screen.dart';
+import 'dart:async';
+import 'attraction_detail_screen.dart'; // Make sure this exists and is correct
 
-class AttractionScreen extends StatefulWidget {
-  const AttractionScreen({super.key});
+class ProductScreen extends StatefulWidget {
+  final int id;
+
+  const ProductScreen({Key? key, required this.id}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _AttractionScreen();
+    return _ProductScreenState();
   }
 }
 
-class _AttractionScreen extends State<AttractionScreen> {
-  List<dynamic> _attraction = [];
+class _ProductScreenState extends State<ProductScreen> {
+  List<dynamic> _products = [];
+  bool _isLoading = true;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _fetchAttractions();
+    _fetchProducts();
   }
-  Future<void> _fetchAttractions() async{
-    // Fetch data from API
-    // Set data to _attractionList
-    final response = await http.get(Uri.parse('https://www.melivecode.com/api/attractions'));
-    setState(() {
-          _attraction = json.decode(response.body);
+
+  Future<void> _fetchProducts() async {
+    final String apiUrl = "http://localhost:5001/api/product";
+
+    try {
+      print('⌚ Request start: ${DateTime.now()}');
+      final response = await http.get(Uri.parse(apiUrl)).timeout(const Duration(seconds: 10));
+      print('⌚ Response received: ${DateTime.now()}');
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        if (response.headers['content-type']?.contains('application/json') == true) {
+          final List<dynamic> jsonData = json.decode(response.body);
+          setState(() {
+            _products = jsonData;
+            _isLoading = false;
+          });
+          print('⌚ UI updated: ${DateTime.now()}');
+        } else {
+          print('❌ Error: Content-Type is not application/json');
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      } else {
+        print('❌ Error: HTTP status code ${response.statusCode}');
+        print('Response body: ${response.body}');
+        setState(() {
+          _isLoading = false;
         });
+      }
+    } on TimeoutException catch (e) {
+      print('❌ Error: Timeout - $e');
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('❌ Error fetching data: ${e.toString()}');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Attraction'),
-        backgroundColor: Colors.pinkAccent,
-        foregroundColor: Color.fromARGB(255, 216, 210, 210),
-      ),
-      body: ListView.builder(itemCount: _attraction.length,itemBuilder: (context, index){
-        final attraction = _attraction[index];
-        return ListTile(
-          leading: SizedBox(width: MediaQuery.of(context).size.width*0.2,child: Image.network(attraction['coverimage'])),
-          title: Row(
-            children: [
-              Text(attraction['name']),
-             // Text(attraction['location']),
-            ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Makeup',
+            style: TextStyle(fontFamily: 'Arial', fontWeight: FontWeight.bold),
           ),
-          subtitle:Text(attraction['detail'],
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          ), 
-          onTap: () {
-            Navigator.push(context,MaterialPageRoute(builder: (context)=>AttractionDetailScreen(id: attraction['id'])));
-          }
-        );
-      }),
+          backgroundColor: Colors.pink[100],
+          foregroundColor: Colors.white,
+        ),
+        body: _isLoading
+            ? const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.pink),
+          ),
+        )
+            : GridView.builder(
+          padding: const EdgeInsets.all(20),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: _products.length,
+          itemBuilder: (context, index) {
+            final product = _products[index];
+
+            String imageUrl = product['image'] ?? '';
+            String productName = product['name'] ?? 'Unknown Name';
+            double price = (product['price'] as num?)?.toDouble() ?? 0.0;
+            dynamic productId = product['_id'];
+
+            // All boxes will be white
+            const Color backgroundColor = Colors.white;
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AttractionDetailScreen(
+                      id: productId,
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: imageUrl.isNotEmpty
+                          ? Image.network(
+                        imageUrl,
+                        width: 150, // Increased image size
+                        height: 150, // Increased image size
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(
+                              width: 150, // Match error container size
+                              height: 150, // Match error container size
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.error,
+                                  size: 40, color: Colors.grey),
+                            ),
+                      )
+                          : Container(
+                        width: 150, // Match placeholder size
+                        height: 150, // Match placeholder size
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.image_not_supported,
+                            size: 40, color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      productName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Arial',
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${price.toStringAsFixed(2)}B',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.pink[700],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import 'cart_provider.dart'; // Import CartProvider
-// import 'cart_item.dart'; // Import CartItem
-// import 'cart_page.dart'; // Import CartPage
-//
-// class ProductDetailPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Color(0xFFF2CACA), // สีพื้นหลัง
-//       appBar: AppBar(
-//         backgroundColor: Colors.transparent,
-//         elevation: 0,
-//         leading: IconButton(
-//           icon: Icon(Icons.arrow_back, color: Colors.black),
-//           onPressed: () {
-//             Navigator.pop(context); // กลับไปหน้าก่อนหน้า
-//           },
-//         ),
-//         title: Center(
-//           child: Text(
-//             'M.A.C',
-//             style: TextStyle(
-//               fontWeight: FontWeight.bold,
-//               fontSize: 20,
-//               color: Colors.black,
-//             ),
-//           ),
-//         ),
-//         actions: [
-//           IconButton(
-//             icon: Icon(Icons.share, color: Colors.black),
-//             onPressed: () {
-//               // TODO: Implement Share Functionality
-//             },
-//           ),
-//         ],
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(20.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: <Widget>[
-//             // รูปสินค้า
-//             Container(
-//               decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(20),
-//                 color: Colors.white,
-//               ),
-//               child: ClipRRect(
-//                 borderRadius: BorderRadius.circular(20),
-//                 child: Image.asset(
-//                   'assets/images/mac_lipstick.png', // แทนที่ด้วย path ที่ถูกต้อง
-//                   width: double.infinity,
-//                   height: 300,
-//                   fit: BoxFit.contain, // หรือ BoxFit.cover ตามความเหมาะสม
-//                 ),
-//               ),
-//             ),
-//             SizedBox(height: 20),
-//
-//             // ชื่อสินค้า
-//             Text(
-//               'M.A.C Macximal Silky Matte Lipstick',
-//               style: TextStyle(
-//                 fontSize: 20,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//
-//             // คะแนนและรีวิว
-//             Row(
-//               children: <Widget>[
-//                 Icon(Icons.star, color: Colors.amber),
-//                 Text('5.0'),
-//                 Text(' (10 Reviews)'),
-//               ],
-//             ),
-//             SizedBox(height: 20),
-//
-//             // สี
-//             Text(
-//               'Color',
-//               style: TextStyle(fontWeight: FontWeight.bold),
-//             ),
-//             SizedBox(height: 10),
-//             Row(
-//               children: <Widget>[
-//                 ColorOption(color: Color(0xFFFFD8E7)), // สีชมพูอ่อน
-//                 ColorOption(color: Color(0xFFF8BBD0)), // สีชมพู
-//                 ColorOption(color: Color(0xFFEF9A9A)), // สีแดงชมพู
-//                 ColorOption(color: Color(0xFFE57373)), // สีแดง
-//               ],
-//             ),
-//             SizedBox(height: 30),
-//
-//             // ปุ่ม Add to Cart และ Order Now
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: <Widget>[
-//                 ElevatedButton(
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.white,
-//                     foregroundColor: Colors.deepPurple[400],
-//                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-//                     textStyle: TextStyle(fontSize: 18),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(30),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     // สร้าง CartItem จากข้อมูลสินค้า
-//                     final cartItem = CartItem(
-//                       id: '123', // ควรเป็น ID ที่ไม่ซ้ำกัน
-//                       title: 'M.A.C Macximal Silky Matte Lipstick',
-//                       price: 25.0, // ราคาจริงของสินค้า
-//                       imageUrl: 'assets/images/mac_lipstick.png', // URL รูปภาพ
-//                     );
-//
-//                     // เพิ่มสินค้าลงใน Cart โดยใช้ CartProvider
-//                     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-//                     cartProvider.addItem(cartItem);
-//
-//                     // นำทางไปยังหน้า Cart
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(builder: (context) => CartPage()),
-//                     );
-//                   },
-//                   child: Text('Add to Cart'),
-//                 ),
-//                 ElevatedButton(
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.deepPurple[400],
-//                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-//                     textStyle: TextStyle(fontSize: 18),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(30),
-//                     ),
-//                   ),
-//                   onPressed: () {
-//                     // TODO: Implement Order Now Functionality
-//                   },
-//                   child: Text('Order Now', style: TextStyle(color: Colors.white)),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// // Widget สำหรับแต่ละตัวเลือกสี
-// class ColorOption extends StatelessWidget {
-//   final Color color;
-//
-//   const ColorOption({
-//     Key? key,
-//     required this.color,this
-//   }) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       width: 30,
-//       height: 30,
-//       margin: EdgeInsets.only(right: 10),
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         color: color,
-//         border: Border.all(
-//           color: Colors.black26,
-//           width: 1,
-//         ),
-//       ),
-//     );
-//   }
-// }
-

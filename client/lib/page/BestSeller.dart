@@ -1,94 +1,73 @@
 import 'package:flutter/material.dart';
+import 'package:untitled5/services/api_service.dart';
+import 'package:untitled5/page/ProductDetailPage.dart'; // Import หน้ารายละเอียดสินค้า
+import 'package:untitled5/page/HomePage.dart'; // Import HomePage
 
 class BestSellersPage extends StatelessWidget {
+  final ApiService apiService = ApiService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Best Sellers'),
-        backgroundColor: Colors.pink, // Match the primarySwatch color
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              // Implement search functionality
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.shopping_cart),
-            onPressed: () {
-              // Implement cart functionality
-            },
-          ),
-        ],
-      ),
-      backgroundColor: Color(0xFF69376D), // พื้นหลังสีม่วง
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFFFDD8E7)),
-              child: Text(
-                'Menu',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            _drawerItem(context, Icons.home, 'Home', '/home'),
-            _drawerItem(context, Icons.update, 'Status', '/status'),
-            _drawerItem(context, Icons.category, 'Categories', '/categories'),
-            _drawerItem(
-                context, Icons.local_offer, 'Promotions', '/promotions'),
-            _drawerItem(context, Icons.star, 'Best Sellers', '/bestSellers'),
-            _drawerItem(context, Icons.favorite, 'Beauty Tips', '/beautyTips'),
-            _drawerItem(context, Icons.info, 'About Us', '/about'),
-          ],
-        ),
-      ),
+      backgroundColor: Color(0xFF69376D),
       body: Column(
         children: [
-          // Title
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Text(
-              'Best Sellers',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage1()),
+                    );
+                  },
+                ),
+                Text(
+                  'Best Sellers',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 48), // Placeholder to balance the row
+              ],
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: EdgeInsets.all(20),
-              children: [
-                _buildBestSellerItem(
-                  image: 'assets/images/dior.png',
-                  brand: 'Dior',
-                  description:
-                      'Dior Forever Skin Glow 24h Hydrating\nRadiant Foundation - 30ml',
-                  rating: 4.8,
-                  reviews: 365,
-                  price: '2,900.00',
-                ),
-                _buildBestSellerItem(
-                  image: 'assets/images/rare_beauty.png',
-                  brand: 'Rare Beauty',
-                  description: 'Soft Pinch Liquid Blush - 7.5ml',
-                  rating: 4.8,
-                  reviews: 17433,
-                  price: '1,100.00',
-                ),
-                _buildBestSellerItem(
-                  image: 'assets/images/hourglass.png',
-                  brand: 'Hourglass',
-                  description: 'Vanish™ Airbrush Concealer',
-                  rating: 4.8,
-                  reviews: 1182,
-                  price: '1,700.00',
-                ),
-              ],
+            child: FutureBuilder<List<dynamic>>(
+              future: ApiService.fetchBestSeller(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No bestsellers available'));
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(20),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final item = snapshot.data![index];
+                      return _buildBestSellerItem(
+                        context: context,
+                        id: item['_id'].toString(),  // แก้ไขการส่ง id
+                        image: item['image'] ?? 'https://via.placeholder.com/150',
+                        name: item['name'] ?? 'No Brand',
+                        details: item['details'] ?? 'No Description',
+                        rating: item['rating']?.toDouble() ?? 0.0,
+                        reviews: item['reviews']?.toInt() ?? 0,
+                        price: item['price']?.toDouble() ?? 0.0,
+                      );
+                    },
+                  );
+                }
+              },
             ),
           ),
         ],
@@ -97,67 +76,68 @@ class BestSellersPage extends StatelessWidget {
   }
 
   Widget _buildBestSellerItem({
+    required BuildContext context,
+    required String id,
     required String image,
-    required String brand,
-    required String description,
+    required String name,
+    required String details,
     required double rating,
     required int reviews,
-    required String price,
+    required double price,
   }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 15),
-      padding: EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.asset(image, width: 60, height: 80),
-          SizedBox(width: 15),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  brand,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                Text(
-                  description,
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    Text('$rating', style: TextStyle(fontSize: 14)),
-                    Icon(Icons.star, color: Colors.yellow, size: 16),
-                    Text(' $reviews Reviews', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-                SizedBox(height: 5),
-                Text(
-                  '$price Bath',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.favorite_border),
-        ],
-      ),
-    );
-  }
-
-  ListTile _drawerItem(
-      BuildContext context, IconData icon, String title, String route) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.deepPurple),
-      title: Text(title),
+    return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, route);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(id: id),  // ส่ง id ไปที่ ProductDetailPage
+          ),
+        );
       },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 15),
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(image, width: 60, height: 80),
+            SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  Text(
+                    details,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Text('$rating', style: TextStyle(fontSize: 14)),
+                      Icon(Icons.star, color: Colors.yellow, size: 16),
+                      Text(' $reviews Reviews', style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    '$price Bath',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.favorite_border),
+          ],
+        ),
+      ),
     );
   }
 }

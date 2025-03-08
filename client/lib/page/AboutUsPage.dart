@@ -7,38 +7,15 @@ class AboutUsPage extends StatelessWidget {
       backgroundColor: Color(0xFFF2CACA),
       body: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(0), // Set border radius to 0
-              color: Color(0xFFFDD8E7),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Builder(
-                    builder: (context) => IconButton(
-                      icon: Icon(Icons.menu, color: Colors.deepPurple[400]),
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                    ),
-                  ),
-                  Text(
-                    'GLAMORA',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple[400],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.person_outline,
-                        color: Colors.deepPurple[400]),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                  ),
-                ],
+          Padding(
+            padding: const EdgeInsets.only(top: 40.0, left: 20.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.deepPurple[400]),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
           ),

@@ -2,6 +2,20 @@ const product = require('../Model/product')
 const express = require('express')
 const router = express.Router()
 
+
+router.get('/', async (req, res) => {
+  try {
+      const producted = await product.find({});
+      console.log(producted);
+      res.json(producted);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
 router.post('/create', async (req, res) => {
     console.log(req.body);
 

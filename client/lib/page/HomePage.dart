@@ -5,19 +5,16 @@ import 'package:untitled5/page/BeautyTips.dart';
 import 'package:untitled5/page/BestSeller.dart';
 import 'package:untitled5/page/Categoties.dart';
 import 'package:untitled5/page/Promotions.dart';
-import 'package:untitled5/page/Status.dart';
-import 'package:untitled5/page/SearchResultsPage.dart';
-import 'package:untitled5/page/gorgina.dart';
-import 'package:untitled5/page/Shiseido.dart';
-import 'package:untitled5/page/rare_beauty.dart';
+import 'package:untitled5/page/search_page.dart';
+import 'package:untitled5/page/ProductDetailPage.dart'; // Import ProductDetailPage
+
+import 'package:untitled5/services/api_service.dart';
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: HomePage1(),
     routes: {
-      '/home': (context) => HomePage1(),
-      '/status': (context) => StatusPage(),
       '/categories': (context) => CategoryPage(),
       '/promotions': (context) => PromotionsPage(),
       '/bestsellers': (context) => BestSellersPage(),
@@ -34,61 +31,49 @@ class HomePage1 extends StatefulWidget {
 }
 
 class _HomePage1State extends State<HomePage1> {
+  final ApiService apiService = ApiService();
+  Future<List<dynamic>>? bestSellers;
+  Future<List<dynamic>>? makeupProducts;
   TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _allItems = [
-    {"name": "Gorgina", "image": "assets/images/gorgina_lipstick.jpg"},
-    {"name": "Shiseido", "image": "assets/images/shiseido_lipstick.jpg"},
-    {"name": "Rare Beauty", "image": "assets/images/rare_beauty.jpg"},
-  ];
-  List<Map<String, String>> _filteredItems = [];
-  Map<String, String>? _selectedItem;
+  Future<List<dynamic>>? searchResults;
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _allItems;
-    _searchController.addListener(_filterItems);
+    bestSellers = ApiService.fetchBestSeller();
+    makeupProducts = ApiService.fetchMakeupProducts();
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    _searchController.removeListener(_filterItems);
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
 
-  void _filterItems() {
-    String query = _searchController.text.toLowerCase();
+  void _onSearchChanged() {
     setState(() {
-      _filteredItems = _allItems
-          .where((item) => item["name"]!.toLowerCase().contains(query))
-          .toList();
+      searchResults = ApiService.searchProduct(_searchController.text);
     });
   }
 
-  void _onSearch() {
-    String query = _searchController.text;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            SearchResultsPage(query: query, items: _filteredItems),
-      ),
-    );
-  }
-
-  void _onProductTap(Map<String, String> item) {
-    setState(() {
-      _selectedItem = item;
-    });
-  }
+void _onSearch() {
+  String query = _searchController.text;
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => SearchPage(), // ไม่ใช้ const []
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF2CACA),
+      backgroundColor: Color.fromRGBO(242, 202, 202, 1),
       appBar: AppBar(
-        backgroundColor: Color(0xFFFDD8E7),
+        backgroundColor: Color.fromARGB(255, 248, 165, 198),
         iconTheme: IconThemeData(color: Colors.deepPurple[400]),
         title: Text(
           'GLAMORA',
@@ -113,14 +98,12 @@ class _HomePage1State extends State<HomePage1> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFFFDD8E7)),
+              decoration: BoxDecoration(color: Color(0xFFF2CACA)),
               child: Image.asset(
                 'assets/images/logo2.png',
                 fit: BoxFit.contain,
               ),
             ),
-            _drawerItem(Icons.home, 'Home', '/home'),
-            _drawerItem(Icons.system_update, 'Status', '/status'),
             _drawerItem(Icons.category, 'Categories', '/categories'),
             _drawerItem(Icons.local_offer, 'Promotions', '/promotions'),
             _drawerItem(Icons.star, 'Best Sellers', '/bestsellers'),
@@ -138,9 +121,11 @@ class _HomePage1State extends State<HomePage1> {
               SizedBox(height: 20),
               _buildSearchBar(),
               SizedBox(height: 20),
-              _selectedItem == null
-                  ? _buildBestSellersSection()
-                  : _buildProductDetails(_selectedItem!),
+              _buildBestSellersSection(),
+              SizedBox(height: 20),
+              _buildMakeupSection(),
+              SizedBox(height: 20),
+              _buildSearchResults(),
             ],
           ),
         ),
@@ -213,100 +198,175 @@ class _HomePage1State extends State<HomePage1> {
           ],
         ),
         SizedBox(height: 10),
-        SizedBox(
-          height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: _allItems.length,
-            itemBuilder: (context, index) {
-              return Container(
-                margin: EdgeInsets.only(right: 10),
-                child: GestureDetector(
-                  onTap: () => _onProductTap(_allItems[index]),
-                  child: BestSellersPage(
-
-                      // onTap: () {
-                      //   // Navigate to the product detail page
-                      //   Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) {
-                      //         // Determine which detail page to show based on the index
-                      //         switch (index) {
-                      //           case 0:
-                      //             return GorginaLipstickDetailPage(
-                      //               productName: _allItems[index]["name"]!,
-                      //               productImage: _allItems[index]["image"]!,
-                      //             );
-                      //           case 1:
-                      //             return ShiseidoLipstickDetailPage(
-                      //               productName: _allItems[index]["name"]!,
-                      //               productImage: _allItems[index]["image"]!,
-                      //             );
-                      //           case 2:
-                      //             return RareBeautyDetailPage(
-                      //               productName: _allItems[index]["name"]!,
-                      //               productImage: _allItems[index]["image"]!,
-                      //             );
-                      //           default:
-                      //             return Container(); // Or an error page
-                      //         }
-                      //       },
-                      //     ),
-                      //   );
-                      // },
-                      //child: Column(
-                      /* children: [
-                        Image.asset(
-                          _allItems[index]["image"]!,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        SizedBox(height: 5),
-                        Text(_allItems[index]["name"]!),
-                      ],
-                    ),*/
-                      ),
+        FutureBuilder<List<dynamic>>(
+          future: bestSellers,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No bestsellers available'));
+            } else {
+              return SizedBox(
+                height: 250,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final item = snapshot.data![index];
+                    return _buildProductItem(item);
+                  },
                 ),
               );
-            },
-          ),
+            }
+          },
         ),
       ],
     );
   }
 
-  Widget _buildProductDetails(Map<String, String> item) {
+  Widget _buildMakeupSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          item["name"]!,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Makeup',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: () {
+                Navigator.pushNamed(context, '/makeup');
+              },
+            ),
+          ],
         ),
         SizedBox(height: 10),
-        Image.asset(
-          item["image"]!,
-          width: double.infinity,
-          height: 250,
-          fit: BoxFit.cover,
-        ),
-        SizedBox(height: 20),
-        Text(
-          'Product details go here...',
-          style: TextStyle(fontSize: 16),
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _selectedItem = null;
-            });
+        FutureBuilder<List<dynamic>>(
+          future: makeupProducts,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No makeup products available'));
+            } else {
+              return SizedBox(
+                height: 250,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final item = snapshot.data![index];
+                    return _buildProductItem(item);
+                  },
+                ),
+              );
+            }
           },
-          child: Text('Back to Best Sellers'),
         ),
       ],
+    );
+  }
+
+  Widget _buildProductItem(dynamic item) {
+    return Container(
+      width: 150,
+      margin: EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 5,
+            spreadRadius: 2,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailPage(id: item['_id']),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15),
+                topRight: Radius.circular(15),
+              ),
+              child: Image.network(
+                item['image'] ?? 'https://via.placeholder.com/150',
+                width: 150,
+                height: 150,
+                fit: BoxFit.cover,
+              ),
+            ),
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                item['name'] ?? 'No Name',
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    return FutureBuilder<List<dynamic>>(
+      future: searchResults,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('No results found'));
+        } else {
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final item = snapshot.data![index];
+              return ListTile(
+                leading: Image.network(
+                  item['image'] ?? 'https://via.placeholder.com/50',
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(item['name'] ?? 'No Name'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(id: item['_id']),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        }
+      },
     );
   }
 

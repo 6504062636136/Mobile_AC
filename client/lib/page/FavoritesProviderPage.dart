@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:untitled5/models/cart_item.dart';
 
-import 'CartProvider.dart';
+class FavoriteProvider with ChangeNotifier {
+  List<Map<String, dynamic>> _favorites = [];
 
-class FavoritesProvider with ChangeNotifier {
-  final List<CartItem> _favorites = [];
+  List<Map<String, dynamic>> get favorites => _favorites;
 
-  List<CartItem> get favorites => _favorites;
+  void toggleFavorite(Map<String, dynamic> item) {
+    final existingIndex =
+        _favorites.indexWhere((favItem) => favItem['name'] == item['name']);
 
-  void addFavorite(CartItem item) {
-    _favorites.add(item);
+    if (existingIndex != -1) {
+      _favorites.removeAt(existingIndex); // ลบออกจาก Favorite
+    } else {
+      _favorites.add(item); // เพิ่มเข้า Favorite
+    }
+
     notifyListeners();
   }
 
-  void removeFavorite(String itemId) {
-    _favorites.removeWhere((item) => item.id == itemId);
-    notifyListeners();
+  bool isFavorite(String name) {
+    return _favorites.any((favItem) => favItem['name'] == name);
   }
 }

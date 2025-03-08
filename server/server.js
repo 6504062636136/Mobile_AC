@@ -12,6 +12,10 @@ const{readdirSync, read} = require('fs')
 const productRouters = require('./Routes/product')
 const authRouters = require('./Routes/auth')
 const skincareRouters = require('./Routes/skincare')
+const bestsellerRouters = require('./Routes/bestseller')
+const tipsRouters = require('./Routes/tips')
+const cartRouters = require('./Routes/cart')  
+
 //const userRouters = require('./Routes/user')
 //const orderRouters = require('./Routes/order')
 
@@ -31,7 +35,9 @@ app.use(bodyParser.json({ limit: '10mb'}))
 app.use('/api/product', productRouters)
 app.use('/api', authRouters)
 app.use('/api/skincare', skincareRouters)
-
+app.use('/api/bestseller', bestsellerRouters)
+app.use('/api/tips', tipsRouters)
+app.use('/api/cart', cartRouters)
 
 
 //route3
@@ -39,4 +45,4 @@ app.use('/api/skincare', skincareRouters)
 mongoose.connect('mongodb+srv://s6504062636136:EFxLw1B7PJZnm6tv@cluster0.cu6l1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
-app.listen(5000, () => console.log('server is  listening on port 5000'))
+app.listen(5002, () => console.log('server is  listening on port 5001'))

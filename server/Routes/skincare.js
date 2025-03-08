@@ -1,15 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const Skincare = require('../Model/skincare'); // เปลี่ยนจาก Product เป็น Skincare
+const Skincare = require('../Model/skincare'); 
+
+router.get('/', async (req, res) => {
+  try {
+      const producted = await product.find({});
+      res.json(producted);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 router.post('/create', async (req, res) => {
-    console.log(req.body); // Debugging input
+    console.log(req.body);
 
     try {
-        const newSkincare = new Skincare(req.body); // ใช้โมเดล Skincare
-        const savedSkincare = await newSkincare.save(); // บันทึกลงฐานข้อมูล
+        const newSkincare = new Skincare(req.body); 
+        const savedSkincare = await newSkincare.save(); 
 
-        res.status(201).json(savedSkincare); // ส่งข้อมูลกลับ
+        res.status(201).json(savedSkincare); 
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
